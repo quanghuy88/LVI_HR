@@ -17,6 +17,13 @@ namespace Infrastructure.Data
         public LVIDashboardContext(DbContextOptions<LVIDashboardContext> options) : base(options)
         {
         }
+        public virtual DbSet<branch> branches { get; set; } = null!;
+        public virtual DbSet<claim> claims { get; set; } = null!;
+        public virtual DbSet<fact_date> fact_dates { get; set; } = null!;
+        public virtual DbSet<insurance_policy> insurance_policies { get; set; } = null!;
+        public virtual DbSet<insurance_product> insurance_products { get; set; } = null!;
+        public virtual DbSet<revenue_plan> revenue_plans { get; set; } = null!;
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<branch>(entity =>
@@ -612,6 +619,37 @@ namespace Infrastructure.Data
                 entity.Property(e => e.modified_date).HasColumnType("datetime");
 
                 entity.Property(e => e.name).HasMaxLength(500);
+            });
+
+            modelBuilder.Entity<revenue_plan>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToTable("revenue_plan");
+
+                entity.Property(e => e.branchid).HasColumnType("decimal(18, 0)");
+
+                entity.Property(e => e.code)
+                    .HasMaxLength(200)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.fromdate).HasColumnType("datetime");
+
+                entity.Property(e => e.id)
+                    .HasColumnType("decimal(18, 0)")
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.name).HasMaxLength(500);
+
+                entity.Property(e => e.productid).HasColumnType("decimal(18, 0)");
+
+                entity.Property(e => e.revenue).HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.todate).HasColumnType("datetime");
+
+                entity.Property(e => e.type)
+                    .HasMaxLength(10)
+                    .IsFixedLength();
             });
 
             OnModelCreatingPartial(modelBuilder);
