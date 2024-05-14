@@ -17,6 +17,13 @@ namespace Application.Authorization
     {
 
         //public static bool IsAdministrator(this HttpContext context) => context.RequestServices.GetRequiredService<IContextUserService>().IsAdministrator;
+        public static IServiceCollection AddPermissionPolicyAuthorization(this IServiceCollection services)
+        {
+            //services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
+            services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
+            return services;
+        }
+        public static bool IsAdministrator(this HttpContext context) => context.RequestServices.GetRequiredService<IContextUserService>().IsAdministrator;
 
         public static AuthenticationBuilder AddPermissionPolicyCookieAuthentication(this IServiceCollection services)
         {

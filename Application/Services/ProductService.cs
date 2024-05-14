@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Utility;
 
 namespace Application.Services
 {
@@ -19,7 +20,7 @@ namespace Application.Services
         public ProductService(IServiceProvider serviceProvider) => _productRepo = serviceProvider.GetService(_productRepo);
         public async Task<List<insurance_product>> GetProduct() 
         {
-            return _productRepo.AsNoTracking().ToListAsync();
+            return _productRepo.AsNoTracking().ToList();
         }
     }
 }

@@ -14,7 +14,7 @@ namespace Infrastructure.Data
     {
         public static IServiceCollection AddExternalDbContexts(this IServiceCollection services, IConfiguration config)
         {
-            services.AddDbContext<LVIDashboardContext>(options => options.UseSqlServer(config.GetConnectionString("BIC.Contract")));
+            services.AddDbContext<LVIDashboardContext>(options => options.UseSqlServer(config.GetConnectionString("LVI.DW")));
             //services.AddDbContext<BICContractLoggingContext>(options => options.UseSqlServer(config.GetConnectionString("BIC.Contract")));
             //services.AddDbContext<BICSystemContext>(options => options.UseSqlServer(config.GetConnectionString("BIC.System")));
             //services.AddDbContext<BICSystemLoginContext>(options => options.UseSqlServer(config.GetConnectionString("BIC.System")));

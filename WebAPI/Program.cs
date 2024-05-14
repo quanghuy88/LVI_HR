@@ -1,6 +1,11 @@
 using Utility;
 using Application.Authentication;
 using Microsoft.Extensions.Configuration;
+using Infrastructure.Data;
+using Repository;
+using Application.Authorization;
+using Application.Services;
+
 namespace WebAPI
 {
     public class Program
@@ -21,6 +26,7 @@ namespace WebAPI
             builder.Services.AddPermissionPolicyAuthorization();
             builder.Services.AddExternalDbContexts(builder.Configuration);
             builder.Services.AddExternalDbRepositories();
+            builder.Services.AddBusinessServices();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
