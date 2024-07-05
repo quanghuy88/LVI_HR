@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace Services.Abstraction.IServices
 {
-    public interface IFactDateService: IInjection
+    public interface ICategoryService: IInjection
     {
-        public Task<List<fact_date>> GetFactDateAll();
-        public Task<List<fact_date>> GetFactDateDetailMonth();
+        public Task<List<dwh_list_insurance_product>> GetProduct();
+        public Task<List<dwh_list_branch>> GetBranch();
     }
 }

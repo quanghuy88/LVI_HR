@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Model\Report_Branch.cs~RF10ff1060.TMP" />
+  </ItemGroup>
+
 </Project>
