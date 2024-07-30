@@ -43,6 +43,5 @@ namespace Core.Entities
         public decimal? created_by { get; set; }
         public decimal? modified_by { get; set; }
         public string? b_function { get; set; }
-        public decimal? id__1_ { get; set; }
     }
 }

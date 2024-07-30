@@ -1040,19 +1040,19 @@ namespace Infrastructure.Data
 
                 entity.ToTable("dwh_fact_branch_cg_date");
 
-                entity.Property(e => e.account_year)
-                    .HasMaxLength(10)
-                    .IsFixedLength();
+                entity.Property(e => e.account_year).HasColumnType("numeric(18, 0)");
+                entity.Property(e => e.account_month).HasColumnType("numeric(18, 0)");
 
                 entity.Property(e => e.branch_id).HasColumnType("numeric(18, 0)");
 
                 entity.Property(e => e.datadate).HasColumnType("datetime");
+                entity.Property(e => e.int_datadate).HasColumnType("numeric(18, 0)");
 
-                entity.Property(e => e.exchange_revenue_money).HasColumnType("numeric(18, 0)");
+                entity.Property(e => e.original_money).HasColumnType("numeric(18, 0)");
 
-                entity.Property(e => e.foreign_revenue_money).HasColumnType("numeric(18, 2)");
+                entity.Property(e => e.foreign_money).HasColumnType("numeric(18, 2)");
 
-                entity.Property(e => e.group_code)
+                entity.Property(e => e.class_group_code)
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
@@ -1070,7 +1070,7 @@ namespace Infrastructure.Data
                 entity.Property(e => e.branch_id).HasColumnType("numeric(18, 0)");
 
                 entity.Property(e => e.datadate).HasColumnType("datetime");
-                entity.Property(e => e.datadate).HasColumnType("numeric(18, 0)");
+                entity.Property(e => e.int_datadate).HasColumnType("numeric(18, 0)");
 
                 entity.Property(e => e.exchange_non_retention_compensation_money).HasColumnType("numeric(18, 0)");
 
@@ -1276,10 +1276,6 @@ namespace Infrastructure.Data
                     .IsUnicode(false);
 
                 entity.Property(e => e.id).HasColumnType("numeric(18, 0)");
-
-                entity.Property(e => e.id__1_)
-                    .HasColumnType("numeric(18, 0)")
-                    .HasColumnName("id (1)");
 
                 entity.Property(e => e.image).HasMaxLength(200);
 

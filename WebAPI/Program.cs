@@ -12,6 +12,7 @@ namespace WebAPI
     {
         public static void Main(string[] args)
         {
+            var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
@@ -27,6 +28,15 @@ namespace WebAPI
             builder.Services.AddExternalDbContexts(builder.Configuration);
             builder.Services.AddExternalDbRepositories();
             builder.Services.AddBusinessServices();
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                                  policy =>
+                                  {
+                                      policy.WithOrigins("http://localhost:4200");
+                                  });
+            });
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -39,7 +49,7 @@ namespace WebAPI
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
+            app.UseCors(MyAllowSpecificOrigins);
 
             app.MapControllers();
 

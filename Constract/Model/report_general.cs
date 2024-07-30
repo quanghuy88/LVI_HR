@@ -27,8 +27,6 @@ namespace Constract.Model
         public string ln_lk_tt { get; set; }
         public string tlbtgl_lk_namht { get; set; }
         public string tlbtgl_lk_namtruoc { get; set; }
-        public string TLKH_LK_NamHT { get; set; }
-        public string TLKHDNamTruoc { get; set; }
         public List<bhg_thang> bhg_thangs { get; set; }
         public List<bhg_nnv_lk> bhg_nnv_lks { get; set; }
         public List<tlbtgl_nnv_lk> tlbtgl_nnv_lks { get; set; }

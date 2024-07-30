@@ -6,7 +6,6 @@ using Services.Abstraction.IServices;
 namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
     //[Authorize]
     public class CategoryController : ControllerBase
     {
@@ -18,8 +17,10 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetProduct() => Ok(_categoryService.GetProduct());
+        [Route("classgroup")]
+        public async Task<IActionResult> GetListProduct() => Ok(_categoryService.GetClassGroup());
         [HttpGet]
-        public async Task<IActionResult> GetBranch() => Ok(_categoryService.GetBranch());
+        [Route("branch")]
+        public async Task<IActionResult> GetListBranch() => Ok(_categoryService.GetBranch());
     }
 }

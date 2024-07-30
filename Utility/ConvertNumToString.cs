@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Utility
 {
-    public static class ConvertNumToWord
+    public static class ConvertNumToString
     {
         public static string NumberToWords(int number)
         {
@@ -75,7 +75,7 @@ namespace Utility
             {
                 words += Math.Floor(number / 1000000000).ToString("###,###") + " B";
             }
-            
+
             return words;
         }
         public static string ShortenNumberBillion(decimal number)

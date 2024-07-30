@@ -11,7 +11,9 @@ namespace Constract.Model
         public string thang { get; set; }
         public string nam_ht { get; set; }
         public string bhg_thang_namht { get; set; }
+        public string bhg_thang_namht_format { get; set; }
         public string bhg_thang_namtruoc { get; set; }
+        public string bhg_thang_namtruoc_format { get; set; }
         public string bhg_thang_tangtruong { get; set; }
     }
 }

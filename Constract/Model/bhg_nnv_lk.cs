@@ -8,10 +8,11 @@ namespace Constract.Model
 {
     public class bhg_nnv_lk
     {
-        public string Thang { get; set; }
-        public string NghiepVu { get; set; }
-        public string BHG_NNV_LK_NamHT { get; set; }
-        public string BHG_NNV_LK_NamNgoai { get; set; }
-        public string BHG_NNV_LK_TT { get; set; }
+        public string nhomnghiepvu { get; set; }
+        public string bhg_nnv_lk_namht { get; set; }
+        public string bhg_nnv_lk_namtruoc { get; set; }
+        public string bhg_nnv_lk_namht_format { get; set; }
+        public string bhg_nnv_lk_namtruoc_format { get; set; }
+        public string bhg_nnv_lk_tt { get; set; }
     }
 }

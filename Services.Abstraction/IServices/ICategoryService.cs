@@ -1,4 +1,5 @@
-﻿using Core.Entities;
+﻿using Constract.Model;
+using Core.Entities;
 using Injection;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace Services.Abstraction.IServices
 {
     public interface ICategoryService: IInjection
     {
-        public Task<List<dwh_list_insurance_product>> GetProduct();
-        public Task<List<dwh_list_branch>> GetBranch();
+        public Task<List<class_group_model>> GetClassGroup();
+        public Task<List<branch_model>> GetBranch();
     }
 }

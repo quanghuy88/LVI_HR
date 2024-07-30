@@ -4,6 +4,7 @@ using Services.Abstraction.IServices;
 
 namespace WebAPI.Controllers
 {
+    [Route("api/[controller]")]
     public class DashboardController : Controller
     {
         private readonly IGetReportService _getReportSevice;
@@ -13,10 +14,13 @@ namespace WebAPI.Controllers
             _getReportSevice = getReportSevice;
         }
         [HttpGet]
+        [Route("reportgeneral")]
         public async Task<IActionResult> ReportGeneral() => Ok(_getReportSevice.GetReportGeneral());
         [HttpGet]
+        [Route("reportbranch")]
         public async Task<IActionResult> ReportBranch(int branchid) => Ok(_getReportSevice.GetReportBranch(branchid));
         [HttpGet]
+        [Route("reportclassgroup")]
         public async Task<IActionResult> ReportClassGroup(string class_group_code) => Ok(_getReportSevice.GetReportClassGroup(class_group_code));
     }
 }
