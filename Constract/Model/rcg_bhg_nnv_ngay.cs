@@ -10,5 +10,6 @@ namespace Constract.Model
     {
         public string ngay { get; set; }
         public string bhg_nnv_ngay { get; set; }
+        public string bhg_nnv_ngay_format { get; set; } 
     }
 }

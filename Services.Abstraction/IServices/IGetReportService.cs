@@ -12,6 +12,6 @@ namespace Services.Abstraction.IServices
     {
         public Task<report_general> GetReportGeneral();
         public Task<report_branch> GetReportBranch(int branch_id);
-        public Task<report_class_group> GetReportClassGroup(string class_group_code);
+        public Task<report_class_group> GetReportClassGroup(decimal? class_group_id);
     }
 }

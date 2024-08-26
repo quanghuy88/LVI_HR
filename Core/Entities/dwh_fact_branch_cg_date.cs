@@ -7,7 +7,7 @@ namespace Core.Entities
     {
         public decimal id { get; set; }
         public decimal branch_id { get; set; }
-        public string? class_group_code { get; set; }
+        public decimal class_group_id { get; set; }
         public int? account_year { get; set; }
         public int account_month { get; set; }
         public decimal foreign_money { get; set; }

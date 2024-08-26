@@ -5,6 +5,8 @@ using Infrastructure.Data;
 using Repository;
 using Application.Authorization;
 using Application.Services;
+using Microsoft.AspNetCore.Diagnostics;
+using WebAPI.BuilderExtensions;
 
 namespace WebAPI
 {
@@ -49,6 +51,7 @@ namespace WebAPI
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
+            app.UseExceptionHandlerMiddleware();
             app.UseCors(MyAllowSpecificOrigins);
 
             app.MapControllers();

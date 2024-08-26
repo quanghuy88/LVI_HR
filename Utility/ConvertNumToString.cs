@@ -8,7 +8,7 @@ namespace Utility
 {
     public static class ConvertNumToString
     {
-        public static string NumberToWords(int number)
+        public static string NumberToWords(this int number)
         {
             if (number == 0)
                 return "zero";
@@ -60,10 +60,10 @@ namespace Utility
             }
             return words;
         }
-        public static string NumberToString(decimal number)
+        public static string NumberToString(this decimal number)
         {
             if (number == 0)
-                return "zero";
+                return "0";
 
             if (number < 0)
                 return "-" + NumberToString(Math.Abs(number));
@@ -78,7 +78,7 @@ namespace Utility
 
             return words;
         }
-        public static string ShortenNumberBillion(decimal number)
+        public static string ShortenNumberBillion(this decimal number)
         {
             if (Math.Floor(Math.Abs(number) / 1000000000) == 0)
                 return "0";

@@ -1052,7 +1052,7 @@ namespace Infrastructure.Data
 
                 entity.Property(e => e.foreign_money).HasColumnType("numeric(18, 2)");
 
-                entity.Property(e => e.class_group_code)
+                entity.Property(e => e.class_group_id)
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
@@ -1105,13 +1105,22 @@ namespace Infrastructure.Data
 
                 entity.Property(e => e.branch_id).HasColumnType("numeric(18, 0)");
 
-                entity.Property(e => e.class_code).HasColumnType("decimal(18, 0)");
+                entity.Property(e => e.class_code).HasMaxLength(50);
+
+                entity.Property(e => e.class_group_id).HasColumnType("numeric(18, 0)");
+
+                entity.Property(e => e.account_month).HasColumnType("numeric(18, 0)");
+
+                entity.Property(e => e.original_money).HasColumnType("numeric(18, 0)");
+
+                entity.Property(e => e.foreign_money).HasColumnType("numeric(18, 2)");
+
+                entity.Property(e => e.code_order).HasMaxLength(50);
 
                 entity.Property(e => e.datadate).HasColumnType("datetime");
 
-                entity.Property(e => e.exchange_revenue_money).HasColumnType("numeric(18, 0)");
+                entity.Property(e => e.int_datadate).HasColumnType("numeric(18, 0)");
 
-                entity.Property(e => e.foreign_revenue_money).HasColumnType("numeric(18, 2)");
 
                 entity.Property(e => e.id)
                     .HasColumnType("numeric(18, 0)")

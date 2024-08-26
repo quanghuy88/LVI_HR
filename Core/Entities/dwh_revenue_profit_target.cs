@@ -15,6 +15,6 @@ namespace Core.Entities
         public string account_month { get; set; }
         public string account_year { get; set; }
         public string type_target { get; set; }
-        public string class_group_code { get; set; }
+        public decimal class_group_id { get; set; }
     }
 }

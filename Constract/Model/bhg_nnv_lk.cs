@@ -8,6 +8,7 @@ namespace Constract.Model
 {
     public class bhg_nnv_lk
     {
+        public decimal class_group_id { get; set; }
         public string nhomnghiepvu { get; set; }
         public string bhg_nnv_lk_namht { get; set; }
         public string bhg_nnv_lk_namtruoc { get; set; }

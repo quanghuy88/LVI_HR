@@ -7,11 +7,14 @@ namespace Core.Entities
     {
         public decimal id { get; set; }
         public decimal branch_id { get; set; }
-        public decimal? class_code { get; set; }
+        public string class_code { get; set; }
+        public decimal class_group_id { get; set; }
         public string? account_year { get; set; }
         public int account_month { get; set; }
-        public decimal foreign_revenue_money { get; set; }
-        public decimal exchange_revenue_money { get; set; }
-        public DateTime? datadate { get; set; }
+        public decimal foreign_money { get; set; }
+        public decimal original_money { get; set; }
+        public string code_order { get; set; }
+        public DateTime datadate { get; set; }
+        public int int_datadate { get; set; }
     }
 }
