@@ -1,13 +1,17 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Constract.Model;
+using Core.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstraction.IServices;
+using Utility;
 
 namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
-    //[Authorize]
-    public class CategoryController : ControllerBase
+    [ApiController] 
+    [Authorize(AuthenticationSchemes = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)]
+    public class CategoryController : Controller
     {
         private readonly ICategoryService _categoryService;
 
@@ -15,12 +19,9 @@ namespace WebAPI.Controllers
         {
             _categoryService = categoryService;
         }
-
-        [HttpGet]
-        [Route("classgroup")]
-        public async Task<IActionResult> GetListProduct() => Ok(_categoryService.GetClassGroup());
-        [HttpGet]
-        [Route("branch")]
-        public async Task<IActionResult> GetListBranch() => Ok(_categoryService.GetBranch());
+        [HttpGet("classgroup")]
+        public Task<ResponseModel<List<class_group_model>>> GetListProduct() => _categoryService.GetClassGroupAsync().ToResponseModelAsync();
+        [HttpGet("branch")]
+        public Task<ResponseModel<List<branch_model>>> GetListBranch() => _categoryService.GetBranchAsync().ToResponseModelAsync();
     }
 }

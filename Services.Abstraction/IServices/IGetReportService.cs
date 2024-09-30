@@ -10,8 +10,8 @@ namespace Services.Abstraction.IServices
 {
     public interface IGetReportService : IInjection
     {
-        public Task<report_general> GetReportGeneral();
-        public Task<report_branch> GetReportBranch(int branch_id);
-        public Task<report_class_group> GetReportClassGroup(decimal? class_group_id);
+        public Task<report_general> GetReportGeneralAsync();
+        public Task<report_branch> GetReportBranchAsync(decimal? branch_id);
+        public Task<report_class_group> GetReportClassGroupAsync(decimal? class_group_id);
     }
 }

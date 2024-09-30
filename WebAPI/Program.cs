@@ -7,6 +7,9 @@ using Application.Authorization;
 using Application.Services;
 using Microsoft.AspNetCore.Diagnostics;
 using WebAPI.BuilderExtensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace WebAPI
 {
@@ -36,9 +39,10 @@ namespace WebAPI
                 options.AddPolicy(name: MyAllowSpecificOrigins,
                                   policy =>
                                   {
-                                      policy.WithOrigins("http://localhost:4200");
+                                      policy.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
                                   });
             });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -50,11 +54,9 @@ namespace WebAPI
 
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
-            app.UseExceptionHandlerMiddleware();
+            //app.UseAuthorization();
+            //app.UseExceptionHandlerMiddleware();
             app.UseCors(MyAllowSpecificOrigins);
-
-            app.MapControllers();
 
             app.Run();
         }

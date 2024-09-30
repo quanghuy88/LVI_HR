@@ -22,7 +22,7 @@ namespace Application.Services
             _mgRepo = serviceProvider.GetService(_mgRepo);
             _branchRepo = serviceProvider.GetService(_branchRepo);
         }
-        public async Task<List<class_group_model>> GetClassGroup() 
+        public async Task<List<class_group_model>> GetClassGroupAsync() 
         {
             var result = new List<class_group_model>();
             var lstcg = _mgRepo.AsNoTracking().ToList();
@@ -37,10 +37,9 @@ namespace Application.Services
                     result.Add(obj);
                 }
             }
-
             return result;
         }
-        public async Task<List<branch_model>> GetBranch()
+        public async Task<List<branch_model>> GetBranchAsync()
         {
             var result = new List<branch_model>();
             var lstbranch = _branchRepo.AsNoTracking().Where(x => x.level == 2).ToList();
@@ -56,7 +55,6 @@ namespace Application.Services
                     result.Add(obj);
                 }
             }
-
             return result;
         }
     }

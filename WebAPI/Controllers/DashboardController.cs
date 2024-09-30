@@ -1,10 +1,14 @@
 ﻿using Constract.Model;
+using Core.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstraction.IServices;
+using Utility;
 
 namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
+    [ApiController, Authorize(AuthenticationSchemes = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)]
     public class DashboardController : Controller
     {
         private readonly IGetReportService _getReportSevice;
@@ -13,13 +17,11 @@ namespace WebAPI.Controllers
         {
             _getReportSevice = getReportSevice;
         }
-        [HttpGet]
-        [Route("reportgeneral")]
-        public async Task<IActionResult> ReportGeneral() => Ok(_getReportSevice.GetReportGeneral());
-        [HttpGet]
-        [Route("reportbranch")]
-        public async Task<IActionResult> ReportBranch(int branchid) => Ok(_getReportSevice.GetReportBranch(branchid));
+        [HttpGet("reportgeneral")]
+        public Task<ResponseModel<report_general>> ReportGeneral() => _getReportSevice.GetReportGeneralAsync().ToResponseModelAsync();
+        [HttpGet("reportbranch")]
+        public Task<ResponseModel<report_branch>> ReportBranch(decimal branch_id) => _getReportSevice.GetReportBranchAsync(branch_id).ToResponseModelAsync();
         [HttpGet("reportclassgroup")]
-        public async Task<IActionResult> ReportClassGroup(decimal class_group_id) => Ok(_getReportSevice.GetReportClassGroup(class_group_id));
+        public Task<ResponseModel<report_class_group>> ReportClassGroup(decimal class_group_id) => _getReportSevice.GetReportClassGroupAsync(class_group_id).ToResponseModelAsync();
     }
 }

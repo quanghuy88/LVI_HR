@@ -1,5 +1,7 @@
 ﻿using Constract.Authentication;
 using Core.Dtos.Authorization;
+using Core.Models;
+using Injection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,8 +10,8 @@ using System.Threading.Tasks;
 
 namespace Services.Abstraction.IServices
 {
-    public interface IAuthenticationService
+    public interface IAuthenticationService: IInjection
     {
-        Task<ResultLogin> Login(LoginRequest request);
+        public Task<ResultLogin> LoginAsync(LoginRequest request);
     }
 }

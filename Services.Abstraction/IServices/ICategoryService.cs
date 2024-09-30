@@ -11,7 +11,7 @@ namespace Services.Abstraction.IServices
 {
     public interface ICategoryService: IInjection
     {
-        public Task<List<class_group_model>> GetClassGroup();
-        public Task<List<branch_model>> GetBranch();
+        public Task<List<class_group_model>> GetClassGroupAsync();
+        public Task<List<branch_model>> GetBranchAsync();
     }
 }

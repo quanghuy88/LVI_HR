@@ -10,6 +10,11 @@ namespace Core.Dtos.Authorization
     public class ResultLogin : dwh_admin_user
     {
         public string Token { get; set; }
-        //public string UserRole { get; set; }
+        public string msg { get; set; }
+        public decimal? departmentId { get; set; }
+        public string departmentName { get; set; }
+        public string branch_code { get; set; }
+        public string branch_name { get; set; }
+        public object[][] Role { get; set; }
     }
 }
