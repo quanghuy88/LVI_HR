@@ -21,7 +21,7 @@ namespace Constract.Model
         public string bhg_lk_ht { get; set; }
         public string bhg_lk_muctieu { get; set; }
         public string bhg_lk_tlht { get; set; }
-        public string bhg_lk_phankhai { get; set; }
+        public string bhg_lk_namtruoc { get; set; }
         public string bhg_lk_tangtruong { get; set; }
         public string tlbtgl_ht { get; set; }
         public string tlbtgl_namtruoc { get; set; }

@@ -8,7 +8,8 @@ using Utility;
 namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController, Authorize(AuthenticationSchemes = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)]
+    [ApiController]
+    [Authorize(AuthenticationSchemes = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)]
     public class DashboardController : Controller
     {
         private readonly IGetReportService _getReportSevice;

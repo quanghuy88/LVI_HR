@@ -82,8 +82,7 @@ namespace Application.Services
                     resultLogin.branch_id = vbranch != null ? vbranch.id : null;
                     resultLogin.branch_code = vbranch != null ? vbranch.code : "";
                     resultLogin.branch_name = vbranch != null ? vbranch.name : "";
-
-                    resultLogin.Token = JsonConvert.SerializeObject(token);
+                    resultLogin.Token = token;
                     resultLogin.msg = "Login succcess!";
                     return resultLogin;
                 }

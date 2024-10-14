@@ -39,12 +39,16 @@ namespace WebAPI
                 options.AddPolicy(name: MyAllowSpecificOrigins,
                                   policy =>
                                   {
-                                      policy.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+                                      policy.WithOrigins("http://localhost:4200").AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
                                   });
             });
 
             var app = builder.Build();
+            app.UseAuthorization();
+            //app.UseExceptionHandlerMiddleware();
+            
 
+            app.UseCors(MyAllowSpecificOrigins);
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -53,11 +57,7 @@ namespace WebAPI
             }
 
             app.UseHttpsRedirection();
-
-            //app.UseAuthorization();
-            //app.UseExceptionHandlerMiddleware();
-            app.UseCors(MyAllowSpecificOrigins);
-
+            app.MapControllers();
             app.Run();
         }
     }

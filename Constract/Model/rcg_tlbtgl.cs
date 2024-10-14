@@ -10,5 +10,6 @@ namespace Constract.Model
     {
         public string class_code { get; set; }
         public string tlbtgl { get; set; }
+        public string tlbtgl_format { get; set; }
     }
 }

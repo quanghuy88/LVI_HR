@@ -29,7 +29,40 @@ namespace Application.Authentication
             Id = Guid.NewGuid();
             return GetClaims(userAccounts, Id);
         }
-        public static JwtUserTokens GenTokenkey(JwtUserTokens model, JwtSetting jwtSettings)
+        //public static JwtUserTokens GenTokenkey(JwtUserTokens model, JwtSetting jwtSettings)
+        //{
+        //    if (model == null) throw new ArgumentException(nameof(model));
+        //    try
+        //    {
+        //        // Get secret key
+        //        var key = System.Text.Encoding.ASCII.GetBytes(jwtSettings.IssuerSigningKey);
+        //        Guid Id = Guid.Empty;
+        //        DateTime expireTime = DateTime.Now.AddDays(jwtSettings.ClockSkew);
+        //        model.Validaty = expireTime.TimeOfDay;
+        //        var JWToken = new JwtSecurityToken(
+        //            issuer: jwtSettings.ValidIssuer,
+        //            audience: jwtSettings.ValidAudience,
+        //            claims: GetClaims(model, out Id),
+        //            notBefore: new DateTimeOffset(DateTime.Now).DateTime,
+        //            expires: new DateTimeOffset(expireTime).DateTime,
+        //            signingCredentials: new SigningCredentials
+        //            (new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
+        //        );
+
+        //        model.Token = new JwtSecurityTokenHandler().WriteToken(JWToken);
+        //        var idRefreshToken = Guid.NewGuid();
+
+        //        model.GuidId = Id;
+        //        model.ExpiredTime = expireTime;
+        //        model.RefreshToken = idRefreshToken.ToString();
+        //        return model;
+        //    }
+        //    catch (Exception)
+        //    {
+        //        throw;
+        //    }
+        //}
+        public static string GenTokenkey(JwtUserTokens model, JwtSetting jwtSettings)
         {
             if (model == null) throw new ArgumentException(nameof(model));
             try
@@ -48,14 +81,7 @@ namespace Application.Authentication
                     signingCredentials: new SigningCredentials
                     (new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
                 );
-
-                model.Token = new JwtSecurityTokenHandler().WriteToken(JWToken);
-                var idRefreshToken = Guid.NewGuid();
-
-                model.GuidId = Id;
-                model.ExpiredTime = expireTime;
-                model.RefreshToken = idRefreshToken.ToString();
-                return model;
+                return new JwtSecurityTokenHandler().WriteToken(JWToken);
             }
             catch (Exception)
             {

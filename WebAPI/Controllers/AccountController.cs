@@ -15,6 +15,7 @@ namespace WebAPI.Controllers
 {
     //[Authorize]
     [Route("api/[controller]")]
+    [ApiController]
     public class AccountController : Controller
     {
         private readonly IAuthenticationService _authenService;
@@ -25,8 +26,7 @@ namespace WebAPI.Controllers
             _jwtSettings = jwtSettings;
             _authenService = autenService;
         }
-        [HttpPost]
-        [Route("Login")]
+        [HttpPost("Login")]
         public Task<ResponseModel<ResultLogin>> Login(LoginRequest request) => _authenService.LoginAsync(request).ToResponseModelAsync();
         //public async Task<ResponseModel<JwtUserTokens>> Login(LoginRequest request)
         //{

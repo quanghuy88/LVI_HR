@@ -69,14 +69,26 @@ namespace Utility
                 return "-" + NumberToString(Math.Abs(number));
 
             string words = "";
-            var x = number / 1000000000;
 
             if (Math.Floor(number / 1000000000) > 0)
             {
                 words += Math.Floor(number / 1000000000).ToString("###,###") + " B";
+                return words;
             }
-
-            return words;
+            else if (Math.Floor(number / 1000000) > 0)
+            {
+                words += Math.Floor(number / 1000000).ToString("###,###") + " M";
+                return words;
+            }
+            else if (Math.Floor(number / 1000) > 0)
+            {
+                words += Math.Floor(number / 1000).ToString("###,###") + " K";
+                return words;
+            }
+            else 
+            {
+                return number.ToString();
+            }
         }
         public static string ShortenNumberBillion(this decimal number)
         {

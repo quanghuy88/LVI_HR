@@ -50,7 +50,7 @@ namespace Application.Services
             var vlstClassGroup = await _amgRepo.AsActiveNoTracking().ToListAsync();
 
             //Ngày này nam truoc
-            var ngaynay_namtruoc = int.Parse((vAAM.next_month_id - 100).ToString() + (DateTime.Now.Day - 1).ToString());
+            var ngaynay_namtruoc = int.Parse((vAAM.next_month_id - 100).ToString() + (DateTime.Now.Day > 9 ? DateTime.Now.Day.ToString() : "0" + DateTime.Now.Day.ToString()));
             //thang này nam truoc
             var thang_namtruoc = vAAM.next_month_id - 100;
             //thang truoc nam truoc
@@ -163,7 +163,7 @@ namespace Application.Services
                                                     original_money = bcgd.original_money,
                                                     int_datadate = bcgd.int_datadate
                                                 })
-                                          .Where(s => s.account_month.ToString().Substring(0, 4) == (int.Parse(vAAM.next_month_id.ToString().Substring(0, 4)) - 1).ToString() && s.account_month < thang_namtruoc && s.code_order == "05")
+                                          .Where(s => s.account_month.ToString().Substring(0, 4) == (int.Parse(vAAM.next_month_id.ToString().Substring(0, 4)) - 1).ToString() && s.int_datadate < ngaynay_namtruoc && s.code_order == "05")
                                           .GroupBy(s => new { s.class_group_id, s.cg_ename })
                                           .Select(x =>
                                                   new {
@@ -187,30 +187,44 @@ namespace Application.Services
             decimal vBHG_lk_NamTruoc = vLstBHG_Thang_NamTruoc?.Sum(x => x.total_money) ?? 0;
             vReportGeneral.bhg_lk_ht = ConvertNumToString.NumberToString(vLstBHG_Thang_NamHT?.Sum(x => x.total_money) ?? 0);
             vReportGeneral.bhg_mt_nam = ConvertNumToString.NumberToString(bhg_MT_NamHT);
-            vReportGeneral.bhg_lk_tlht = bhg_MT_NamHT == 0 ? "100%" : Math.Round(vBHG_lk_NamHT * 100 / bhg_MT_NamHT, 2, MidpointRounding.AwayFromZero).ToString() + "%";
+            vReportGeneral.bhg_lk_tlht = bhg_MT_NamHT == 0 ? "100%" : 
+                                        (Math.Round(vBHG_lk_NamHT * 100 / bhg_MT_NamHT, 0, MidpointRounding.AwayFromZero) > 9999 ? 9999 :
+                                        Math.Round(vBHG_lk_NamHT * 100 / bhg_MT_NamHT, 2, MidpointRounding.AwayFromZero)).ToString() + "%";
             vReportGeneral.bhg_lk_namtruoc = ConvertNumToString.NumberToString(vBHG_lk_NamTruoc);
-            vReportGeneral.bhg_lk_tt = vBHG_lk_NamTruoc == 0 ? "100" : Math.Round(((vBHG_lk_NamHT / vBHG_lk_NamTruoc) - 1) * 100, 2, MidpointRounding.AwayFromZero).ToString();
+            vReportGeneral.bhg_lk_tt = vBHG_lk_NamTruoc == 0 ? "100%" : (Math.Round(((vBHG_lk_NamHT / vBHG_lk_NamTruoc) - 1) * 100, 2, MidpointRounding.AwayFromZero) > 100 ? 100 : 
+                                                                        Math.Round(((vBHG_lk_NamHT / vBHG_lk_NamTruoc) - 1) * 100, 2, MidpointRounding.AwayFromZero)).ToString();
             //DT tháng
             decimal bhg_MT_ThangHT = vLstBHG_MT.FirstOrDefault(x => x.account_month == vAAM.next_month_id.ToString() && x.type_target == "revenue")?.target ?? 0;
+            decimal vBHG_Thang_NamHT = vLstBHG_Thang_NamHT.FirstOrDefault(x => x.account_month == vAAM.account_month_id)?.total_money ?? 0;
             decimal vBHG_Thang_NamTruoc = vLstBHG_Thang_NamTruoc.FirstOrDefault(x => x.account_month == thang_namtruoc)?.total_money ?? 0;
             vReportGeneral.dt_mt_thanght = ConvertNumToString.NumberToString(bhg_MT_ThangHT);
             vReportGeneral.dt_thang_ht = ConvertNumToString.NumberToString(vLstBHG_Thang_NamHT.FirstOrDefault(x => x.account_month == vAAM.account_month_id)?.total_money ?? 0);
             vReportGeneral.dt_thang_tlht = bhg_MT_ThangHT == 0 ? "100%" :
                 (Math.Round(vLstBHG_Thang_NamHT.FirstOrDefault(x => x.account_month == vAAM.account_month_id)?.total_money ?? 0) / bhg_MT_ThangHT, 2, MidpointRounding.AwayFromZero).ToString() + "%";
             vReportGeneral.dt_thang_namtruoc = ConvertNumToString.NumberToString(vBHG_Thang_NamTruoc);
-            vReportGeneral.dt_thang_tt = vBHG_Thang_NamTruoc == 0 ? "100%" :
-                (Math.Round(((vLstBHG_Thang_NamHT.FirstOrDefault(x => x.account_month == vAAM.account_month_id)?.total_money ?? 0) / vBHG_Thang_NamTruoc) - 1) * 100, 2, MidpointRounding.AwayFromZero).ToString() + "%";
+            vReportGeneral.dt_thang_tt = vBHG_Thang_NamTruoc == 0 ? "100%" : 
+                (Math.Round(((vBHG_Thang_NamHT / vBHG_Thang_NamTruoc) - 1) * 100, 2, MidpointRounding.AwayFromZero) > 100 ? 100 :
+                Math.Round(((vBHG_Thang_NamHT / vBHG_Thang_NamTruoc) - 1) * 100, 2, MidpointRounding.AwayFromZero)).ToString() + "%";
             //loi nhuan luy ke
             decimal ln_MT_NamHT = vLstBHG_MT.FirstOrDefault(x => x.account_month == vAAM.account_month_id.ToString().Substring(0, 4) && x.type_target == "profit" && x.branch_id == 1 && x.class_group_id == 1)?.target ?? 0;
             decimal ln_lk_namht = (vLstBHG_Thang_NamHT?.Sum(x => x.total_money) ?? 0) - (vLstBT_Thang_NamHT?.Sum(x => x.total_compensation) ?? 0);
             decimal ln_lk_namtruoc = (vLstBHG_Thang_NamTruoc?.Sum(x => x.total_money) ?? 0) - (vLstBT_Thang_NamTruoc?.Sum(x => x.total_compensation) ?? 0);
-            vReportGeneral.ln_mt_nam = ConvertNumToString.NumberToString(ln_MT_NamHT);
+            vReportGeneral.ln_mt_nam = ln_MT_NamHT == 0 ? "0" : ConvertNumToString.NumberToString(ln_MT_NamHT);
             vReportGeneral.ln_lk_thanght = ConvertNumToString.NumberToString(ln_lk_namht);
             vReportGeneral.ln_lk_tlht = ln_MT_NamHT == 0 ? "100%" :
-                Math.Round(ln_lk_namht / ln_MT_NamHT, 2, MidpointRounding.AwayFromZero).ToString() + "%";
+                (Math.Round(ln_lk_namht / ln_MT_NamHT, 2, MidpointRounding.AwayFromZero) > 100 ? 100 :
+                Math.Round(ln_lk_namht / ln_MT_NamHT, 2, MidpointRounding.AwayFromZero)).ToString() + "%";
             vReportGeneral.ln_lk_namtruoc = ConvertNumToString.NumberToString(ln_lk_namtruoc);
             vReportGeneral.ln_lk_tt = ln_lk_namtruoc == 0 ? "100%" : Math.Round(((ln_lk_namht / ln_lk_namtruoc) - 1) * 100, 2, MidpointRounding.AwayFromZero).ToString();
-
+            //tlbtgl
+            var vbt_lk_namht = vLstTongBT_NNV_NamHT?.Sum(x => x.total_compensation) ?? 0;
+            var vbt_lk_namtruoc = vLstTongBT_NNV_NamTruoc?.Sum(x => x.total_compensation) ?? 0;
+            vReportGeneral.tlbtgl_lk_namht = vBHG_lk_NamHT == 0 ? (vbt_lk_namht == 0 ? "0" : "100%") :
+                            (Math.Round(vbt_lk_namht / vBHG_lk_NamHT, 2) > 9999 ? 9999 :
+                            Math.Round(vbt_lk_namht / vBHG_lk_NamHT, 2)).ToString() + "%";
+            vReportGeneral.tlbtgl_lk_namtruoc = vBHG_lk_NamTruoc == 0 ? (vbt_lk_namtruoc == 0 ? "0" : "100%") :
+                                    (Math.Round(vbt_lk_namtruoc / vBHG_lk_NamTruoc, 2) > 9999 ? 9999 :
+                                    Math.Round(vbt_lk_namtruoc / vBHG_lk_NamTruoc, 2)).ToString() + "%";
             //bhg các tháng
             if ((vLstBHG_Thang_NamHT?.Count() ?? 0) > 0)
             {
@@ -220,9 +234,9 @@ namespace Application.Services
                     vData.thang = vLstBHG_Thang_NamHT[i].account_month.ToString().Substring(4, 2);
                     vData.nam_ht = vLstBHG_Thang_NamHT[i].account_month.ToString().Substring(0, 4);
                     vData.bhg_thang_namht = ConvertNumToString.ShortenNumberBillion(vLstBHG_Thang_NamHT[i].total_money);
-                    vData.bhg_thang_namtruoc = ConvertNumToString.ShortenNumberBillion(0);
-                    vData.bhg_thang_namht_format = ConvertNumToString.NumberToStringFormat(vLstBHG_Thang_NamHT[i].total_money) + " LAK";
-                    vData.bhg_thang_namtruoc_format = ConvertNumToString.NumberToStringFormat(0) + " LAK";
+                    vData.bhg_thang_namtruoc = "0";
+                    vData.bhg_thang_namht_format = vLstBHG_Thang_NamHT[i].total_money == 0 ? "0" : ConvertNumToString.NumberToStringFormat(vLstBHG_Thang_NamHT[i].total_money) + " LAK";
+                    vData.bhg_thang_namtruoc_format = "0 LAK";
                     vData.bhg_thang_tangtruong = "100";
                     lst_bhg_thang.Add(vData);
                 }
@@ -234,21 +248,21 @@ namespace Application.Services
                     var index = lst_bhg_thang.FindIndex(x => x.thang == vLstBHG_Thang_NamTruoc[i].account_month.ToString().Substring(4, 2));
                     if (index > -1)
                     {
+                        var vbhg_thang_namht = vLstBHG_Thang_NamHT.Find(x => x.account_month.ToString().Substring(4, 2) == vLstBHG_Thang_NamTruoc[i].account_month.ToString().Substring(4, 2)).total_money;
                         lst_bhg_thang[index].bhg_thang_namtruoc = ConvertNumToString.ShortenNumberBillion(vLstBHG_Thang_NamTruoc[i].total_money);
-                        lst_bhg_thang[index].bhg_thang_namht_format = ConvertNumToString.NumberToStringFormat(vLstBHG_Thang_NamTruoc[i].total_money) + " LAK";
-                        lst_bhg_thang[index].bhg_thang_tangtruong = Math.Round(((vLstBHG_Thang_NamHT
-                            .Find(x => x.account_month.ToString().Substring(4, 2) == vLstBHG_Thang_NamTruoc[i].account_month.ToString().Substring(4, 2)).total_money /
-                            vLstBHG_Thang_NamTruoc[i].total_money) - 1) * 100, 2, MidpointRounding.AwayFromZero).ToString();
+                        lst_bhg_thang[index].bhg_thang_namtruoc_format = ConvertNumToString.NumberToStringFormat(vLstBHG_Thang_NamTruoc[i].total_money) + " LAK";
+                        lst_bhg_thang[index].bhg_thang_tangtruong = vLstBHG_Thang_NamTruoc[i].total_money == 0 ? "100" : 
+                            Math.Round(((vbhg_thang_namht / vLstBHG_Thang_NamTruoc[i].total_money) - 1) * 100, 2, MidpointRounding.AwayFromZero).ToString();
                     }
                     else
                     {
                         var vData = new bhg_thang();
                         vData.thang = vLstBHG_Thang_NamHT[i].account_month.ToString().Substring(4, 2);
                         vData.nam_ht = vLstBHG_Thang_NamHT[i].account_month.ToString().Substring(0, 4);
-                        vData.bhg_thang_namht = ConvertNumToString.ShortenNumberBillion(0);
-                        vData.bhg_thang_namtruoc = ConvertNumToString.ShortenNumberBillion(vLstBHG_Thang_NamTruoc[i].total_money);
-                        vData.bhg_thang_namht_format = ConvertNumToString.NumberToStringFormat(0) + " LAK";
-                        vData.bhg_thang_namtruoc_format = ConvertNumToString.NumberToStringFormat(vLstBHG_Thang_NamTruoc[i].total_money) + " LAK";
+                        vData.bhg_thang_namht = "0";
+                        vData.bhg_thang_namtruoc = vLstBHG_Thang_NamTruoc[i].total_money == 0 ? "0" : ConvertNumToString.ShortenNumberBillion(vLstBHG_Thang_NamTruoc[i].total_money);
+                        vData.bhg_thang_namht_format = "0 LAK";
+                        vData.bhg_thang_namtruoc_format = vLstBHG_Thang_NamTruoc[i].total_money == 0 ? "0" : ConvertNumToString.NumberToStringFormat(vLstBHG_Thang_NamTruoc[i].total_money) + " LAK";
                         vData.bhg_thang_tangtruong = "0";
                         lst_bhg_thang.Add(vData);
                     }
@@ -258,15 +272,15 @@ namespace Application.Services
             //bhg nhóm nv các lũy kế
             if ((vLstBHG_NNV_NamHT?.Count() ?? 0) > 0)
             {
-                for (int i = 0; i < vLstBHG_Thang_NamHT.Count(); i++)
+                for (int i = 0; i < vLstBHG_NNV_NamHT.Count(); i++)
                 {
                     var vData = new bhg_nnv_lk();
                     vData.class_group_id = vLstBHG_NNV_NamHT[i].class_group_id;
                     vData.nhomnghiepvu = vLstBHG_NNV_NamHT[i].cg_ename;
-                    vData.bhg_nnv_lk_namht = ConvertNumToString.ShortenNumberBillion(vLstBHG_NNV_NamHT[i].total_money);
-                    vData.bhg_nnv_lk_namtruoc = ConvertNumToString.ShortenNumberBillion(0);
-                    vData.bhg_nnv_lk_namht_format = ConvertNumToString.NumberToStringFormat(vLstBHG_NNV_NamHT[i].total_money) + " LAK";
-                    vData.bhg_nnv_lk_namtruoc_format = ConvertNumToString.NumberToStringFormat(0) + " LAK";
+                    vData.bhg_nnv_lk_namht = vLstBHG_NNV_NamHT[i].total_money == 0 ? "0" : ConvertNumToString.ShortenNumberBillion(vLstBHG_NNV_NamHT[i].total_money);
+                    vData.bhg_nnv_lk_namtruoc = "0";
+                    vData.bhg_nnv_lk_namht_format = vLstBHG_NNV_NamHT[i].total_money == 0 ? "0" : ConvertNumToString.NumberToStringFormat(vLstBHG_NNV_NamHT[i].total_money) + " LAK";
+                    vData.bhg_nnv_lk_namtruoc_format = "0 LAK";
                     vData.bhg_nnv_lk_tt = "100";
                     lstBHG_NNV_LK.Add(vData);
                 }
@@ -278,27 +292,28 @@ namespace Application.Services
                     var index = lstBHG_NNV_LK.FindIndex(x => x.class_group_id == vLstBHG_NNV_NamTruoc[i].class_group_id);
                     if (index > -1)
                     {
+                        var vbhg_nnv_namht = vLstBHG_NNV_NamHT.Find(x => x.class_group_id == vLstBHG_NNV_NamTruoc[i].class_group_id).total_money;
                         lstBHG_NNV_LK[index].bhg_nnv_lk_namtruoc = ConvertNumToString.ShortenNumberBillion(vLstBHG_NNV_NamTruoc[i].total_money);
                         lstBHG_NNV_LK[index].bhg_nnv_lk_namtruoc_format = ConvertNumToString.NumberToStringFormat(vLstBHG_NNV_NamTruoc[i].total_money) + " LAK";
-                        lstBHG_NNV_LK[index].bhg_nnv_lk_tt = Math.Round(((vLstBHG_NNV_NamHT
-                            .Find(x => x.class_group_id == vLstBHG_NNV_NamTruoc[i].class_group_id).total_money /
-                            vLstBHG_NNV_NamTruoc[i].total_money) - 1) * 100, 2, MidpointRounding.AwayFromZero).ToString();
+                        lstBHG_NNV_LK[index].bhg_nnv_lk_tt = vLstBHG_NNV_NamTruoc[i].total_money == 0 ? "100" : 
+                            Math.Round(((vbhg_nnv_namht / vLstBHG_NNV_NamTruoc[i].total_money) - 1) * 100, 2, MidpointRounding.AwayFromZero).ToString();
                     }
                     else
                     {
                         var vData = new bhg_nnv_lk();
                         vData.class_group_id = vLstBHG_NNV_NamHT[i].class_group_id;
                         vData.nhomnghiepvu = vLstBHG_NNV_NamHT[i].cg_ename;
-                        vData.bhg_nnv_lk_namht = ConvertNumToString.ShortenNumberBillion(0);
-                        vData.bhg_nnv_lk_namtruoc = ConvertNumToString.ShortenNumberBillion(vLstBHG_NNV_NamTruoc[i].total_money);
-                        vData.bhg_nnv_lk_namht_format = ConvertNumToString.NumberToStringFormat(0) + " LAK";
-                        vData.bhg_nnv_lk_namtruoc_format = ConvertNumToString.NumberToStringFormat(vLstBHG_NNV_NamTruoc[i].total_money) + " LAK";
+                        vData.bhg_nnv_lk_namht = "0";
+                        vData.bhg_nnv_lk_namtruoc = vLstBHG_NNV_NamTruoc[i].total_money == 0 ? "0" : ConvertNumToString.ShortenNumberBillion(vLstBHG_NNV_NamTruoc[i].total_money);
+                        vData.bhg_nnv_lk_namht_format = "0 LAK";
+                        vData.bhg_nnv_lk_namtruoc_format = vLstBHG_NNV_NamTruoc[i].total_money == 0 ? "0" : ConvertNumToString.NumberToStringFormat(vLstBHG_NNV_NamTruoc[i].total_money) + " LAK";
                         vData.bhg_nnv_lk_tt = "0";
                         lstBHG_NNV_LK.Add(vData);
                     }
                 }
 
             }
+            //tlbtgl
             if ((vlstClassGroup?.Count() ?? 0) > 0)
             {
                 for (int i = 0; i < vlstClassGroup.Count(); i++)
@@ -312,8 +327,12 @@ namespace Application.Services
                     {
                         var vData1 = new tlbtgl_nnv_lk();
                         vData1.nhomnghiepvu = vlstClassGroup[i].ename;
-                        vData1.tbltgl_nnv_lk_namht = Math.Round(tongbt_nnv_ht * 100 / bhg_nnv_namht, 2, MidpointRounding.AwayFromZero).ToString();
-                        vData1.tbltgl_nnv_lk_namtruoc = Math.Round(tongbt_nnv_namtruoc * 100 / bhg_nnv_namtruoc, 2, MidpointRounding.AwayFromZero).ToString();
+                        vData1.tbltgl_nnv_lk_namht = bhg_nnv_namht == 0 ? "100" : 
+                            (Math.Round(tongbt_nnv_ht * 100 / bhg_nnv_namht, 2, MidpointRounding.AwayFromZero) > 100 ? 100 :
+                            Math.Round(tongbt_nnv_ht * 100 / bhg_nnv_namht, 2, MidpointRounding.AwayFromZero)).ToString();
+                        vData1.tbltgl_nnv_lk_namtruoc = bhg_nnv_namtruoc == 0 ? "100" :
+                            (Math.Round(tongbt_nnv_namtruoc * 100 / bhg_nnv_namtruoc, 2, MidpointRounding.AwayFromZero) > 100 ? 100 :
+                            Math.Round(tongbt_nnv_namtruoc * 100 / bhg_nnv_namtruoc, 2, MidpointRounding.AwayFromZero)).ToString();
                         lstTLBTGL_NNV_LK.Add(vData1);
                     }
                 }
@@ -340,7 +359,7 @@ namespace Application.Services
                 var vAAM = await _aamRepo.AsActiveNoTracking().FirstOrDefaultAsync();
 
                 //Ngày này nam truoc
-                var ngaynay_namtruoc = int.Parse((vAAM.next_month_id - 100).ToString() + (DateTime.Now.Day - 1).ToString());
+                var ngaynay_namtruoc = int.Parse((vAAM.next_month_id - 100).ToString() + (DateTime.Now.Day > 9 ? DateTime.Now.Day.ToString() : "0" + DateTime.Now.Day.ToString()));
                 //thang này nam truoc
                 var thang_namtruoc = vAAM.next_month_id - 100;
                 //thang truoc nam truoc
@@ -444,6 +463,27 @@ namespace Application.Services
                                                          class_code = x.Key.class_code,
                                                          total_compensation = x.Sum(g => g.original_money),
                                                      }).ToListAsync();
+                var vLstTongBT_NV_NamTruoc = await _bcdRepo.AsActiveNoTracking()
+                                             .Join(_lipRepo.AsActiveNoTracking(), bcd => bcd.class_code, lip => lip.code,
+                                                   (bcgd, lip) => new
+                                                   {
+                                                       class_group_id = bcgd.class_group_id,
+                                                       class_code = lip.code,
+                                                       account_month = bcgd.account_month,
+                                                       code_order = bcgd.code_order,
+                                                       account_year = bcgd.account_year,
+                                                       original_money = bcgd.original_money,
+                                                       int_datadate = bcgd.int_datadate
+                                                   })
+                                             .Where(s => s.account_month.ToString().Substring(0, 4) == (vAAM.account_month_id - 100).ToString().Substring(0, 4)
+                                                        && s.code_order == "05" && s.class_group_id == class_group_id && s.int_datadate <= ngaynay_namtruoc)
+                                             .GroupBy(s => new { s.class_code })
+                                             .Select(x =>
+                                                     new
+                                                     {
+                                                         class_code = x.Key.class_code,
+                                                         total_compensation = x.Sum(g => g.original_money),
+                                                     }).ToListAsync();
 
                 //lst muc tieu 
                 var vLstBHG_MT = await _rtRepo.AsActiveNoTracking()
@@ -464,22 +504,34 @@ namespace Application.Services
 
                 var bhg_thanght = vLstBHG_NNV_Thang_NamHT.FirstOrDefault(x => x.account_month == vAAM.account_month_id)?.total_money ?? 0;
                 var bhg_thanght_namtruoc = vLstBHG_NNV_Thang_NamTruoc.FirstOrDefault(x => x.account_month == thang_namtruoc)?.total_money ?? 0;
-                vrcg.bhg_thanght = ConvertNumToString.NumberToString(bhg_thanght);
+                vrcg.bhg_thanght = bhg_thanght == 0 ? "0" : ConvertNumToString.NumberToString(bhg_thanght);
                 vrcg.bhg_thanght_namtruoc = ConvertNumToString.NumberToString(bhg_thanght_namtruoc);
-                vrcg.bhg_thanght_tt = bhg_thanght_namtruoc == 0 ? "100%" : Math.Round((bhg_thanght / bhg_thanght_namtruoc - 1) * 100, 2, MidpointRounding.AwayFromZero).ToString() + "%";
+                vrcg.bhg_thanght_tt = bhg_thanght_namtruoc == 0 ? "100%" : 
+                                    (Math.Round((bhg_thanght / bhg_thanght_namtruoc - 1) * 100, 2, MidpointRounding.AwayFromZero) > 9999 ? 9999 :
+                                    Math.Round((bhg_thanght / bhg_thanght_namtruoc - 1) * 100, 2, MidpointRounding.AwayFromZero)).ToString() + "%";
                 //bhg luy ke
                 var bhg_nnv_lk_namht = vLstBHG_NNV_Thang_NamHT?.Sum(x => x.total_money) ?? 0;
-                var bhg_nnv_lk_namtruoc = (vLstBHG_NNV_Thang_NamTruoc?.Sum(x => x.total_money) ?? 1) == 0 ? 1 : vLstBHG_NNV_Thang_NamTruoc.Sum(x => x.total_money);
-                if (bhg_nnv_lk_namtruoc == 0) bhg_nnv_lk_namtruoc = 1000000000;
+                var bhg_nnv_lk_namtruoc = vLstBHG_NNV_Thang_NamTruoc?.Sum(x => x.total_money) ?? 0;
+                if (bhg_nnv_lk_namtruoc == 0) bhg_nnv_lk_namtruoc = 1;
                 var bhg_nnv_lk_mt_namht = vLstBHG_MT.FirstOrDefault(x => x.rt.account_month == "All" && x.rt.type_target == "revenue")?.rt.target ?? 0;
-                vrcg.bhg_lk_ht = ConvertNumToString.NumberToString(bhg_nnv_lk_namht);
-                vrcg.bhg_lk_muctieu = vLstBHG_MT.FirstOrDefault(x => x.rt.account_month == "All" && x.rt.type_target == "revenue")?.rt.target_name ?? "0";
-                vrcg.bhg_lk_tlht = bhg_nnv_lk_mt_namht == 0 ? "100%" : Math.Round(bhg_nnv_lk_namht / bhg_nnv_lk_mt_namht).ToString() + "%";
-                vrcg.bhg_lk_phankhai = "";
-                vrcg.bhg_lk_tangtruong = Math.Round(((bhg_nnv_lk_namht / bhg_nnv_lk_namtruoc) - 1) * 100, 2, MidpointRounding.AwayFromZero).ToString() + "%";
+                vrcg.bhg_lk_ht = bhg_nnv_lk_namht == 0 ? "0" : ConvertNumToString.NumberToString(bhg_nnv_lk_namht);
+                vrcg.bhg_lk_muctieu = vLstBHG_MT.FirstOrDefault(x => x.rt.account_month == "All" && x.rt.type_target == "revenue")?.rt.target_name ?? "0" + " B";
+                vrcg.bhg_lk_tlht = bhg_nnv_lk_mt_namht == 0 ? "100%" : 
+                                    (Math.Round(bhg_nnv_lk_namht / bhg_nnv_lk_mt_namht) > 9999 ? 9999 :
+                                    Math.Round(bhg_nnv_lk_namht / bhg_nnv_lk_mt_namht)).ToString() + "%";
+                vrcg.bhg_lk_namtruoc = bhg_nnv_lk_namtruoc == 0 ? "0" : ConvertNumToString.NumberToString(bhg_nnv_lk_namtruoc);
+                vrcg.bhg_lk_tangtruong = bhg_nnv_lk_namtruoc == 0 ? "100" : 
+                                        (Math.Round(((bhg_nnv_lk_namht / bhg_nnv_lk_namtruoc) - 1) * 100, 2, MidpointRounding.AwayFromZero) > 9999 ? 9999 :
+                                        Math.Round(((bhg_nnv_lk_namht / bhg_nnv_lk_namtruoc) - 1) * 100, 2, MidpointRounding.AwayFromZero)).ToString() + "%";
                 //tlbtgl
-                vrcg.tlbtgl_ht = bhg_nnv_lk_namht == 0 ? "100%" : Math.Round((vLstBT_NNV_Thang_NamHT?.Sum(x => x.total_compensation) ?? 0) / bhg_nnv_lk_namht, 2).ToString() + "%";
-                vrcg.tlbtgl_namtruoc = Math.Round((vLstBT_NNV_Thang_NamTruoc?.Sum(x => x.total_compensation) ?? 0) / bhg_nnv_lk_namtruoc, 2).ToString();
+                var vbt_nnv_namht = vLstBT_NNV_Thang_NamHT?.Sum(x => x.total_compensation) ?? 0;
+                var vbt_nnv_namtruoc = vLstBT_NNV_Thang_NamTruoc?.Sum(x => x.total_compensation) ?? 0;
+                vrcg.tlbtgl_ht = bhg_nnv_lk_namht == 0 ? "100%" : 
+                                (Math.Round(vbt_nnv_namht / bhg_nnv_lk_namht, 2) > 9999 ? 9999 :
+                                Math.Round(vbt_nnv_namht / bhg_nnv_lk_namht, 2)).ToString() + "%";
+                vrcg.tlbtgl_namtruoc = bhg_nnv_lk_namtruoc == 0 ? "100" :
+                                        (Math.Round(vbt_nnv_namtruoc / bhg_nnv_lk_namtruoc, 2) > 9999 ? 9999 :
+                                        Math.Round(vbt_nnv_namtruoc / bhg_nnv_lk_namtruoc, 2)).ToString() + "%";
 
                 //list bhg nnv theo thang
                 if ((vLstBHG_NNV_Thang_NamHT?.Count() ?? 0) > 0)
@@ -491,7 +543,7 @@ namespace Application.Services
                         vData.bhg_nnv_thang_namht = ConvertNumToString.ShortenNumberBillion(vLstBHG_NNV_Thang_NamHT[i].total_money);
                         vData.bhg_nnv_thang_namht_format = ConvertNumToString.NumberToStringFormat(vLstBHG_NNV_Thang_NamHT[i].total_money);
                         vData.bhg_nnv_thang_namtruoc = "0";
-                        vData.bhg_nnv_thang_namtruoc_format = "0";
+                        vData.bhg_nnv_thang_namtruoc_format = "0 LAK";
                         vData.bhg_nnv_thang_tangtruong = "100%";
                         lstrcg_bhg_nnv_thang.Add(vData);
                     }
@@ -504,8 +556,10 @@ namespace Application.Services
                         if (index > -1)
                         {
                             lstrcg_bhg_nnv_thang[index].bhg_nnv_thang_namtruoc = ConvertNumToString.ShortenNumberBillion(vLstBHG_NNV_Thang_NamTruoc[j].total_money);
-                            lstrcg_bhg_nnv_thang[index].bhg_nnv_thang_namtruoc_format = ConvertNumToString.NumberToStringFormat(vLstBHG_NNV_Thang_NamTruoc[j].total_money);
-                            var bhg_nnv_tt = Math.Round(((vLstBHG_NNV_Thang_NamHT.Find(x => x.account_month.ToString().Substring(4, 2) == vLstBHG_NNV_Thang_NamTruoc[j].account_month.ToString().Substring(4, 2)).total_money / vLstBHG_NNV_Thang_NamTruoc[j].total_money) - 1) * 100, 2, MidpointRounding.AwayFromZero).ToString();
+                            lstrcg_bhg_nnv_thang[index].bhg_nnv_thang_namtruoc_format = vLstBHG_NNV_Thang_NamTruoc[j].total_money == 0 ? "0" : ConvertNumToString.NumberToStringFormat(vLstBHG_NNV_Thang_NamTruoc[j].total_money) + " LAK";
+                            var bhg_nnv_tt = vLstBHG_NNV_Thang_NamTruoc[j].total_money == 0 ? "100" : 
+                                Math.Round(((vLstBHG_NNV_Thang_NamHT.Find(x => x.account_month.ToString().Substring(4, 2) == vLstBHG_NNV_Thang_NamTruoc[j].account_month.ToString().Substring(4, 2)).total_money / 
+                                    vLstBHG_NNV_Thang_NamTruoc[j].total_money) - 1) * 100, 2, MidpointRounding.AwayFromZero).ToString();
                             lstrcg_bhg_nnv_thang[index].bhg_nnv_thang_tangtruong = bhg_nnv_tt;
                             lstrcg_bhg_nnv_thang[index].bhg_nnv_tangtruong_format = bhg_nnv_tt + "%";
                         }
@@ -514,9 +568,9 @@ namespace Application.Services
                             var vData = new rcg_bhg_nnv_thang();
                             vData.thang = vLstBHG_NNV_Thang_NamTruoc[j].account_month.ToString().Substring(4, 2);
                             vData.bhg_nnv_thang_namht = "0";
-                            vData.bhg_nnv_thang_namht_format = "0";
-                            vData.bhg_nnv_thang_namtruoc = ConvertNumToString.ShortenNumberBillion(vLstBHG_NNV_Thang_NamTruoc[j].total_money);
-                            vData.bhg_nnv_thang_namtruoc_format = ConvertNumToString.NumberToStringFormat(vLstBHG_NNV_Thang_NamTruoc[j].total_money);
+                            vData.bhg_nnv_thang_namht_format = "0 LAK";
+                            vData.bhg_nnv_thang_namtruoc = vLstBHG_NNV_Thang_NamTruoc[j].total_money == 0 ? "0" : ConvertNumToString.ShortenNumberBillion(vLstBHG_NNV_Thang_NamTruoc[j].total_money);
+                            vData.bhg_nnv_thang_namtruoc_format = vLstBHG_NNV_Thang_NamTruoc[j].total_money == 0 ? "0" : ConvertNumToString.NumberToStringFormat(vLstBHG_NNV_Thang_NamTruoc[j].total_money) + " LAK";
                             vData.bhg_nnv_thang_tangtruong = "-100";
                             vData.bhg_nnv_tangtruong_format = "-100%";
                             lstrcg_bhg_nnv_thang.Add(vData);
@@ -531,7 +585,7 @@ namespace Application.Services
                         var vData = new rcg_bhg_nnv_ngay();
                         vData.ngay = vLstBHG_NNV_Ngay_thanght[i].ngay.ToString();
                         vData.bhg_nnv_ngay = ConvertNumToString.ShortenNumberBillion(vLstBHG_NNV_Ngay_thanght[i].total_money);
-                        vData.bhg_nnv_ngay_format = ConvertNumToString.NumberToStringFormat(vLstBHG_NNV_Ngay_thanght[i].total_money) + " LAK";
+                        vData.bhg_nnv_ngay_format = vLstBHG_NNV_Ngay_thanght[i].total_money == 0 ? "0" : ConvertNumToString.NumberToStringFormat(vLstBHG_NNV_Ngay_thanght[i].total_money) + " LAK";
                         lstrcg_bhg_nnv_ngay.Add(vData);
                     }
 
@@ -585,7 +639,8 @@ namespace Application.Services
                     {
                         var vData = new rcg_tlbtgl();
                         vData.class_code = vLstTongBT_NV_NamHT[i].class_code;
-                        vData.tlbtgl = "100%";
+                        vData.tlbtgl = "100";
+                        vData.tlbtgl_format = "100%";
                         lstrcg_tlbtgl.Add(vData);
 
                     }
@@ -597,13 +652,16 @@ namespace Application.Services
                         var index = lstrcg_tlbtgl.FindIndex(x => x.class_code == vLstBHG_NV_lk_NamHT[i].class_code);
                         if (index > -1)
                         {
-                            lstrcg_tlbtgl[index].tlbtgl = Math.Round(vLstTongBT_NV_NamHT.Find(x => x.class_code == vLstBHG_NV_lk_NamHT[i].class_code).total_compensation * 100 / vLstBHG_NV_lk_NamHT[i].total_money).ToString();
+                            var vtongbt_nv_namht = vLstTongBT_NV_NamHT.Find(x => x.class_code == vLstBHG_NV_lk_NamHT[i].class_code).total_compensation;
+                            lstrcg_tlbtgl[index].tlbtgl = vLstBHG_NV_lk_NamHT[i].total_money == 0 ? "100" : Math.Round(vtongbt_nv_namht * 100 / vLstBHG_NV_lk_NamHT[i].total_money).ToString();
+                            lstrcg_tlbtgl[index].tlbtgl_format = vLstBHG_NV_lk_NamHT[i].total_money == 0 ? "100" : Math.Round(vtongbt_nv_namht * 100 / vLstBHG_NV_lk_NamHT[i].total_money).ToString() + "%";
                         }
                         else
                         {
                             var vData = new rcg_tlbtgl();
                             vData.class_code = vLstBHG_NV_lk_NamHT[i].class_code;
-                            vData.tlbtgl = "0%";
+                            vData.tlbtgl = "0";
+                            vData.tlbtgl_format = "0%";
                             lstrcg_tlbtgl.Add(vData);
                         }
                     }
@@ -637,7 +695,7 @@ namespace Application.Services
                 var vlstClassGroup = await _amgRepo.AsActiveNoTracking().ToListAsync();
                 var vBranch = await _branchRepo.AsActiveNoTracking().FirstOrDefaultAsync(x => x.id == branch_id);
                 //Ngày này nam truoc
-                var ngaynay_namtruoc = int.Parse((vAAM.next_month_id - 100).ToString() + (DateTime.Now.Day - 1).ToString());
+                var ngaynay_namtruoc = int.Parse((vAAM.next_month_id - 100).ToString() + (DateTime.Now.Day > 9 ? DateTime.Now.Day.ToString() : "0" + DateTime.Now.Day.ToString()));
                 //thang này nam truoc
                 var thang_namtruoc = vAAM.next_month_id - 100;
                 //thang truoc nam truoc
@@ -654,24 +712,22 @@ namespace Application.Services
                 //bhg chi nhanh theo thang
                 var vLstBHG_CN_Thang_NamHT = _bcgdRepo.AsActiveNoTracking()
                                               .Where(s => s.branch_id == branch_id && s.account_month.ToString().Substring(0, 4) == vAAM.account_month_id.ToString().Substring(0, 4))
-                                              .GroupBy(s => new { s.account_year, s.branch_id, s.account_month })
+                                              .GroupBy(s => new { s.branch_id, s.account_month })
                                               .Select(x =>
                                                       new
                                                       {
                                                           branch_id = x.Key.branch_id,
                                                           account_month = x.Key.account_month,
-                                                          account_year = x.Key.account_year,
                                                           total_money = x.Sum(g => g.original_money),
                                                       }).ToList();
                 var vLstBHG_CN_Thang_NamTruoc = _bcgdRepo.AsActiveNoTracking()
                                               .Where(s => s.branch_id == branch_id && s.account_month.ToString().Substring(0, 4) == ngaynay_namtruoc.ToString().Substring(0, 4))
-                                              .GroupBy(s => new { s.account_year, s.branch_id, s.account_month })
+                                              .GroupBy(s => new { s.branch_id, s.account_month })
                                               .Select(x =>
                                                       new
                                                       {
                                                           branch_id = x.Key.branch_id,
                                                           account_month = x.Key.account_month,
-                                                          account_year = x.Key.account_year,
                                                           total_money = x.Sum(g => g.original_money),
                                                       }).ToList();
                 //bhg cn theo ngày
@@ -747,7 +803,7 @@ namespace Application.Services
                                                        int_datadate = bcgd.int_datadate,
                                                        branch_id = bcgd.branch_id
                                                    })
-                                              .Where(s => s.account_year == int.Parse(vAAM.account_month_id.ToString().Substring(0, 4))
+                                              .Where(s => s.account_year == int.Parse(thang_namtruoc.ToString().Substring(0, 4))
                                                          && s.branch_id == branch_id && s.int_datadate < ngaynay_namtruoc)
                                               .GroupBy(s => new { s.class_group_code, s.cg_ename, s.account_year, s.branch_id })
                                               .Select(x =>
@@ -812,12 +868,18 @@ namespace Application.Services
                 //bhg cn lk
                 vrb.dtcn_lk_namht = ConvertNumToString.NumberToString(bhg_cn_lk_namht);
                 vrb.dtcn_muctieu = ConvertNumToString.NumberToString(bhg_cn_muctieu); ;
-                vrb.dtcn_tlht = bhg_cn_muctieu == 0 ? "100%" : Math.Round(bhg_cn_lk_namht * 100 / bhg_cn_muctieu, 2, MidpointRounding.AwayFromZero).ToString() + "%";
+                vrb.dtcn_tlht = bhg_cn_muctieu == 0 ? "100%" : (Math.Round(bhg_cn_lk_namht * 100 / bhg_cn_muctieu, 0, MidpointRounding.AwayFromZero) > 9999 ? 9999 :
+                    Math.Round(bhg_cn_lk_namht * 100 / bhg_cn_muctieu, 0, MidpointRounding.AwayFromZero)).ToString() + "%";
                 vrb.dtcn_lk_namtruoc = ConvertNumToString.NumberToString(bhg_cn_lk_namtruoc);
-                vrb.dtcn_lk_tt = bhg_cn_muctieu == 0 ? "100%" : Math.Round(((bhg_cn_lk_namht / bhg_cn_muctieu) - 1) * 100, 2, MidpointRounding.AwayFromZero).ToString() + "%";
+                vrb.dtcn_lk_tt = bhg_cn_muctieu == 0 ? "100%" : (Math.Round(((bhg_cn_lk_namht / bhg_cn_muctieu) - 1) * 100, 0, MidpointRounding.AwayFromZero) > 9999 ? 9999 :
+                    Math.Round(((bhg_cn_lk_namht / bhg_cn_muctieu) - 1) * 100, 2, MidpointRounding.AwayFromZero)).ToString() + "%";
                 //tlbtgl
-                vrb.tlbtgl_namht = bhg_cn_lk_namht == 0 ? "0%" : Math.Round(vLstBT_CN_Thang_NamHT.Sum(x => x.total_compensation) * 100 / bhg_cn_lk_namht, 2, MidpointRounding.AwayFromZero).ToString() + "%";
-                vrb.tlbtgl_namtruoc = bhg_cn_lk_namtruoc == 0 ? "0%" : Math.Round(vLstBT_CN_Thang_NamHT.Sum(x => x.total_compensation) * 100 / bhg_cn_lk_namtruoc, 2, MidpointRounding.AwayFromZero).ToString() + "%";
+                var vtongbt_cn_thang_namht = vLstBT_CN_Thang_NamHT?.Sum(x => x.total_compensation) ?? 0;
+                var vtongbt_cn_thang_namtruoc = vLstBT_CN_Thang_NamTruoc?.Sum(x => x.total_compensation) ?? 0;
+                vrb.tlbtgl_namht = bhg_cn_lk_namht == 0 ? "0%" : (Math.Round(vtongbt_cn_thang_namht * 100 / bhg_cn_lk_namht, 2, MidpointRounding.AwayFromZero) > 9999 ? 9999 :
+                    Math.Round(vtongbt_cn_thang_namht * 100 / bhg_cn_lk_namht, 2, MidpointRounding.AwayFromZero)).ToString() + "%";
+                vrb.tlbtgl_namtruoc = bhg_cn_lk_namtruoc == 0 ? "0%" : (Math.Round(vtongbt_cn_thang_namtruoc * 100 / bhg_cn_lk_namtruoc, 2, MidpointRounding.AwayFromZero) > 9999 ? 9999 :
+                    Math.Round(vtongbt_cn_thang_namtruoc * 100 / bhg_cn_lk_namtruoc, 2, MidpointRounding.AwayFromZero)).ToString() + "%";
 
                 //list bhg cn theo thang
                 if ((vLstBHG_CN_Thang_NamHT?.Count() ?? 0) > 0)
@@ -826,10 +888,10 @@ namespace Application.Services
                     {
                         var vData = new rb_bhg_cn_thang();
                         vData.thang = vLstBHG_CN_Thang_NamHT[i].account_month.ToString().Substring(4, 2);
-                        vData.bhg_cn_thang_namht = ConvertNumToString.ShortenNumberBillion(vLstBHG_CN_Thang_NamHT[i].total_money);
-                        vData.bhg_cn_thang_namht_format = ConvertNumToString.NumberToStringFormat(vLstBHG_CN_Thang_NamHT[i].total_money);
+                        vData.bhg_cn_thang_namht = vLstBHG_CN_Thang_NamHT[i].total_money == 0 ? "0" : ConvertNumToString.ShortenNumberBillion(vLstBHG_CN_Thang_NamHT[i].total_money);
+                        vData.bhg_cn_thang_namht_format = vLstBHG_CN_Thang_NamHT[i].total_money == 0 ? "0" : ConvertNumToString.NumberToStringFormat(vLstBHG_CN_Thang_NamHT[i].total_money) + " LAK";
                         vData.bhg_cn_thang_namtruoc = "0";
-                        vData.bhg_cn_thang_namtruoc_format = "0";
+                        vData.bhg_cn_thang_namtruoc_format = "0 LAK";
                         vData.bhg_cn_thang_tangtruong = "100";
                         vData.bhg_cn_thang_tangtruong_format = "100%";
                         lst_bhg_cn_thang.Add(vData);
@@ -842,18 +904,20 @@ namespace Application.Services
                         var index = lst_bhg_cn_thang.FindIndex(x => x.thang == vLstBHG_CN_Thang_NamTruoc[j].account_month.ToString().Substring(4, 2));
                         if (index > -1)
                         {
+                            var vbhg_cn_thang_namht = vLstBHG_CN_Thang_NamHT.Find(x => x.account_month.ToString().Substring(4, 2) == vLstBHG_CN_Thang_NamTruoc[j].account_month.ToString().Substring(4, 2))?.total_money ?? 0;
                             lst_bhg_cn_thang[index].bhg_cn_thang_namtruoc = ConvertNumToString.ShortenNumberBillion(vLstBHG_CN_Thang_NamTruoc[j].total_money);
-                            lst_bhg_cn_thang[index].bhg_cn_thang_namtruoc_format = ConvertNumToString.NumberToStringFormat(vLstBHG_CN_Thang_NamTruoc[j].total_money);
-                            lst_bhg_cn_thang[index].bhg_cn_thang_tangtruong = Math.Round(((vLstBHG_CN_Thang_NamHT.Find(x => x.account_month.ToString().Substring(4, 2) == vLstBHG_CN_Thang_NamTruoc[j].account_month.ToString().Substring(4, 2))?.total_money ?? 0 / vLstBHG_CN_Thang_NamTruoc[j].total_money) - 1) * 100, 2, MidpointRounding.AwayFromZero).ToString();
+                            lst_bhg_cn_thang[index].bhg_cn_thang_namtruoc_format = ConvertNumToString.NumberToStringFormat(vLstBHG_CN_Thang_NamTruoc[j].total_money) + " LAK";
+                            lst_bhg_cn_thang[index].bhg_cn_thang_tangtruong = vLstBHG_CN_Thang_NamTruoc[j].total_money == 0 ? "100" : 
+                                Math.Round(((vbhg_cn_thang_namht / vLstBHG_CN_Thang_NamTruoc[j].total_money) - 1) * 100, 2, MidpointRounding.AwayFromZero).ToString();
                         }
-                        else
+                        if (index == -1 && vLstBHG_CN_Thang_NamTruoc[j].account_month <= thang_namtruoc)
                         {
                             var vData = new rb_bhg_cn_thang();
                             vData.thang = vLstBHG_CN_Thang_NamTruoc[j].account_month.ToString().Substring(4, 2);
                             vData.bhg_cn_thang_namht = "0";
-                            vData.bhg_cn_thang_namht_format = "0";
-                            vData.bhg_cn_thang_namtruoc = ConvertNumToString.ShortenNumberBillion(vLstBHG_CN_Thang_NamTruoc[j].total_money);
-                            vData.bhg_cn_thang_namtruoc_format = ConvertNumToString.NumberToStringFormat(vLstBHG_CN_Thang_NamTruoc[j].total_money);
+                            vData.bhg_cn_thang_namht_format = "0 LAK";
+                            vData.bhg_cn_thang_namtruoc = vLstBHG_CN_Thang_NamTruoc[j].total_money == 0  ? "0" : ConvertNumToString.ShortenNumberBillion(vLstBHG_CN_Thang_NamTruoc[j].total_money);
+                            vData.bhg_cn_thang_namtruoc_format = vLstBHG_CN_Thang_NamTruoc[j].total_money == 0 ? "0" : ConvertNumToString.NumberToStringFormat(vLstBHG_CN_Thang_NamTruoc[j].total_money) + " LAK";
                             vData.bhg_cn_thang_tangtruong = "-100";
                             vData.bhg_cn_thang_tangtruong_format = "-100%";
                             lst_bhg_cn_thang.Add(vData);
@@ -880,10 +944,10 @@ namespace Application.Services
                         var vData = new rb_bhg_nnv_cn();
                         vData.class_group_code = vLstBHG_NNV_CN_NamHT[i].class_group_code;
                         vData.class_group_ename = vLstBHG_NNV_CN_NamHT[i].cg_ename;
-                        vData.bhg_nnv_cn_namht = ConvertNumToString.ShortenNumberBillion(vLstBHG_NNV_CN_NamHT[i].total_money);
-                        vData.bhg_nnv_cn_namht_format = ConvertNumToString.NumberToStringFormat(vLstBHG_NNV_CN_NamHT[i].total_money);
+                        vData.bhg_nnv_cn_namht = vLstBHG_NNV_CN_NamHT[i].total_money == 0 ? "0" : ConvertNumToString.ShortenNumberBillion(vLstBHG_NNV_CN_NamHT[i].total_money);
+                        vData.bhg_nnv_cn_namht_format = vLstBHG_NNV_CN_NamHT[i].total_money == 0 ? "0" : ConvertNumToString.NumberToStringFormat(vLstBHG_NNV_CN_NamHT[i].total_money) + " LAK";
                         vData.bhg_nnv_cn_namtruoc = "0";
-                        vData.bhg_nnv_cn_namtruoc_format = "0";
+                        vData.bhg_nnv_cn_namtruoc_format = "0 LAK";
                         vData.bhg_nnv_cn_tangtruong = "100";
                         vData.bhg_nnv_cn_tangtruong_format = "100%";
                         lst_bhg_nnv_cn.Add(vData);
@@ -896,19 +960,21 @@ namespace Application.Services
                         var index = lst_bhg_nnv_cn.FindIndex(x => x.class_group_code == vLstBHG_NNV_CN_Namtruoc[j].class_group_code);
                         if (index > -1)
                         {
+                            var vbhg_nnv_cn_namht = vLstBHG_NNV_CN_NamHT.Find(x => x.class_group_code == vLstBHG_NNV_CN_Namtruoc[j].class_group_code)?.total_money ?? 0;
                             lst_bhg_nnv_cn[index].bhg_nnv_cn_namtruoc = ConvertNumToString.ShortenNumberBillion(vLstBHG_NNV_CN_Namtruoc[j].total_money);
                             lst_bhg_nnv_cn[index].bhg_nnv_cn_namtruoc_format = ConvertNumToString.NumberToStringFormat(vLstBHG_NNV_CN_Namtruoc[j].total_money);
-                            var bhg_nnv_cn_tt = Math.Round(((vLstBHG_NNV_CN_NamHT.Find(x => x.class_group_code == vLstBHG_NNV_CN_Namtruoc[j].class_group_code).total_money / vLstBHG_CN_Thang_NamTruoc[j].total_money) - 1) * 100, 2, MidpointRounding.AwayFromZero).ToString();
-                            lst_bhg_nnv_cn[index].bhg_nnv_cn_tangtruong = bhg_nnv_cn_tt;
-                            lst_bhg_nnv_cn[index].bhg_nnv_cn_tangtruong_format = bhg_nnv_cn_tt + "%";
+                            lst_bhg_nnv_cn[index].bhg_nnv_cn_tangtruong = vLstBHG_CN_Thang_NamTruoc[j].total_money == 0 ? "100" : 
+                                Math.Round(((vbhg_nnv_cn_namht / vLstBHG_NNV_CN_Namtruoc[j].total_money) - 1) * 100, 2, MidpointRounding.AwayFromZero).ToString(); ;
+                            lst_bhg_nnv_cn[index].bhg_nnv_cn_tangtruong_format = vLstBHG_CN_Thang_NamTruoc[j].total_money == 0 ? "100" : 
+                                Math.Round(((vbhg_nnv_cn_namht / vLstBHG_NNV_CN_Namtruoc[j].total_money) - 1) * 100, 2, MidpointRounding.AwayFromZero).ToString() + "%";
                         }
                         else
                         {
                             var vData = new rb_bhg_nnv_cn();
                             vData.bhg_nnv_cn_namht = "0";
                             vData.bhg_nnv_cn_namht_format = "0";
-                            vData.bhg_nnv_cn_namtruoc = ConvertNumToString.ShortenNumberBillion(vLstBHG_NNV_CN_Namtruoc[j].total_money);
-                            vData.bhg_nnv_cn_namtruoc_format = ConvertNumToString.NumberToStringFormat(vLstBHG_NNV_CN_Namtruoc[j].total_money);
+                            vData.bhg_nnv_cn_namtruoc = vLstBHG_NNV_CN_Namtruoc[j].total_money == 0 ? "0" : ConvertNumToString.ShortenNumberBillion(vLstBHG_NNV_CN_Namtruoc[j].total_money);
+                            vData.bhg_nnv_cn_namtruoc_format = vLstBHG_NNV_CN_Namtruoc[j].total_money == 0 ? "0" : ConvertNumToString.NumberToStringFormat(vLstBHG_NNV_CN_Namtruoc[j].total_money) + " LAK";
                             vData.bhg_nnv_cn_tangtruong = "-100";
                             vData.bhg_nnv_cn_tangtruong_format = "-100%";
                             lst_bhg_nnv_cn.Add(vData);
@@ -935,8 +1001,8 @@ namespace Application.Services
                         vData.tlbtgl_namht_format = tbltgl_nnv_cn_namht.ToString() + "%";
                         vData.tlbtgl_namtruoc = tbltgl_nnv_cn_namtruoc.ToString();
                         vData.tlbtgl_namtruoc_format = tbltgl_nnv_cn_namtruoc.ToString() + "%";
-                        vData.tlbtgl_tt = Math.Round(tbltgl_nnv_cn_namht * 100 / tbltgl_nnv_cn_namtruoc, 2, MidpointRounding.AwayFromZero).ToString();
-                        vData.tlbtgl_tt_format = Math.Round(tbltgl_nnv_cn_namht * 100 / tbltgl_nnv_cn_namtruoc, 2, MidpointRounding.AwayFromZero).ToString() + "%";
+                        //vData.tlbtgl_tt = Math.Round(tbltgl_nnv_cn_namht * 100 / tbltgl_nnv_cn_namtruoc, 2, MidpointRounding.AwayFromZero).ToString();
+                        //vData.tlbtgl_tt_format = Math.Round(tbltgl_nnv_cn_namht * 100 / tbltgl_nnv_cn_namtruoc, 2, MidpointRounding.AwayFromZero).ToString() + "%";
                         lstrb_tlbtgl_nnv_cn_thang.Add(vData);
                     }
                 }

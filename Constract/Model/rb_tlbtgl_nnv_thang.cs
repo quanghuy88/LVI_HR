@@ -14,7 +14,7 @@ namespace Constract.Model
         public string tlbtgl_namht_format { get; set; }
         public string tlbtgl_namtruoc { get; set; }
         public string tlbtgl_namtruoc_format { get; set; }
-        public string tlbtgl_tt { get; set; }
-        public string tlbtgl_tt_format { get; set; }
+        //public string tlbtgl_tt { get; set; }
+        //public string tlbtgl_tt_format { get; set; }
     }
 }
