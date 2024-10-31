@@ -27,14 +27,14 @@ namespace Application.Services
         private readonly HttpContext _httpContext;
         //private readonly IAuthentication _authenticationService;
         private readonly JwtSetting _jwtSettings;
-        private readonly ILVIDashboardRepository<dwh_admin_user> _userRepo;
-        private readonly ILVIDashboardRepository<dwh_list_branch> _branchRepo;
+        private readonly ILVIDashboardRepository<admin_user> _userRepo;
+        private readonly ILVIDashboardRepository<admin_department> _adRepo;
         public AuthenticationService(IServiceProvider serviceProvider, JwtSetting jwtSetting)
         {
             _httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
             _jwtSettings = jwtSetting;
             _userRepo = serviceProvider.GetService(_userRepo);
-            _branchRepo = serviceProvider.GetService(_branchRepo);
+            _adRepo = serviceProvider.GetService(_adRepo);
         }
         public async Task<ResultLogin> LoginAsync(LoginRequest request)
         {
@@ -45,8 +45,8 @@ namespace Application.Services
 
                 if (vuser != null)
                 {
-                    var vbranch = await _branchRepo.AsActiveNoTracking().FirstOrDefaultAsync(x => x.id == vuser.branch_id);
-                    var vunit = await _branchRepo.AsActiveNoTracking().FirstOrDefaultAsync(x => x.id == vuser.unit_id);
+                    var vbranch = await _adRepo.AsActiveNoTracking().FirstOrDefaultAsync(x => x.id == vuser.branch_id);
+                    var vunit = await _adRepo.AsActiveNoTracking().FirstOrDefaultAsync(x => x.id == vuser.unit_id);
                     var resultLogin = new ResultLogin();
                     var token = JwtHelpers.GenTokenkey(new Core.Dtos.Jwt.JwtUserTokens()
                     {
@@ -54,24 +54,6 @@ namespace Application.Services
                         UserName = request.Username,
                         Id = vuser.id,
                         Name = vuser.name
-                        //DepartmentID = vunit != null ? vunit.id : null,
-                        //DepartmentName = vunit != null ? vunit.name : "",
-                        //BranchId = vbranch != null ? vbranch.id : null,
-                        //BranchCode = vbranch != null ? vbranch.code : "",
-                        //BranchName = vbranch != null ? vbranch.name : "",
-                        //Role = null,
-                        //LstPermission = null,
-                        //Id = '1',
-                        //Name = request.Username,
-                        //DepartmentID = '1',
-                        //DepartmentName = "cntt",
-                        //BranchId = '2',
-                        //BranchCode = "ho",
-                        //BranchName = "ho",
-                        //Role = null,
-                        //AccountMonthId = 1,
-                        //AccountMonthCode = "",
-                        //LstPermission = null,
                     }, _jwtSettings);
                     resultLogin.id = vuser.id;
                     resultLogin.username = request.Username;

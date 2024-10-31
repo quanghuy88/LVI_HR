@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Core.Entities
 {
-    public partial class dwh_list_auto_posting_code
+    public partial class hr_salary
     {
-        public int? id { get; set; }
-        public string? code { get; set; }
-        public string? name { get; set; }
-        public string? system_code { get; set; }
-        public string? string_check_sql { get; set; }
-        public string? string_insert_sql { get; set; }
-        public string? note { get; set; }
+        public decimal id { get; set; }
+        public int level { get; set; }
+        public string name { get; set; }
+        public decimal type { get; set; }
+        public decimal departmentid { get; set; }
+        public decimal amount { get; set; }
         public int? sequence { get; set; }
         public bool? status { get; set; }
         public DateTime? created_date { get; set; }

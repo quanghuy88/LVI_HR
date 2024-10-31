@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Core.Entities
 {
-    public partial class dwh_admin_user
+    public partial class admin_user
     {
-        public decimal? id { get; set; }
+        public decimal id { get; set; }
         public decimal? staff_id { get; set; }
         public decimal? original_user_id { get; set; }
         public decimal? unit_id { get; set; }

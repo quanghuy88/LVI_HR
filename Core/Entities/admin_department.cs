@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Core.Entities
 {
-    public partial class dwh_list_branch
+    public partial class admin_department
     {
-        public decimal? id { get; set; }
+        public decimal id { get; set; }
         public string? code { get; set; }
         public string? code_ref { get; set; }
-        public DateTime? modified_date { get; set; }
         public string? contact_name { get; set; }
         public string? contact_tel { get; set; }
         public string? name { get; set; }
@@ -41,7 +43,7 @@ namespace Core.Entities
         public bool? status { get; set; }
         public DateTime? created_date { get; set; }
         public decimal? created_by { get; set; }
+        public DateTime? modified_date { get; set; }
         public decimal? modified_by { get; set; }
-        public string? b_function { get; set; }
     }
 }

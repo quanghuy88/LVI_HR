@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Core.Dtos.Authorization
 {
-    public class ResultLogin : dwh_admin_user
+    public class ResultLogin : admin_user
     {
         public string Token { get; set; }
         public string msg { get; set; }

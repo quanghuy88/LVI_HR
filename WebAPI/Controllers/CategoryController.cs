@@ -1,4 +1,5 @@
 ﻿using Constract.Model;
+using Core.Entities;
 using Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
@@ -20,9 +21,24 @@ namespace WebAPI.Controllers
         {
             _categoryService = categoryService;
         }
-        [HttpGet("classgroup")]
-        public Task<ResponseModel<List<class_group_model>>> GetListProduct() => _categoryService.GetClassGroupAsync().ToResponseModelAsync();
-        [HttpGet("branch")]
-        public Task<ResponseModel<List<branch_model>>> GetListBranch() => _categoryService.GetBranchAsync().ToResponseModelAsync();
+        //Get
+        [HttpGet("position")]
+        public Task<ResponseModel<List<admin_position>>> GetListPosition() => _categoryService.GetPositionAsync().ToResponseModelAsync();
+        [HttpGet("country")]
+        public Task<ResponseModel<List<admin_country>>> GetListCountry() => _categoryService.GetCountryAsync().ToResponseModelAsync();
+        [HttpGet("department")]
+        public Task<ResponseModel<List<admin_department>>> GetListDepartment() => _categoryService.GetDepartmentAsync().ToResponseModelAsync();
+        [HttpGet("place")]
+        public Task<ResponseModel<List<admin_place>>> GetListPlace() => _categoryService.GetPlaceAsync().ToResponseModelAsync();
+
+        //Post
+        [HttpPost("position")]
+        public Task<ResponseModel<decimal>> PostPosition(admin_position ap) => _categoryService.PostPositionAsync(ap).ToResponseModelAsync();
+        [HttpPost("country")]
+        public Task<ResponseModel<decimal>> PostCountry(admin_country ac) => _categoryService.PostCountryAsync(ac).ToResponseModelAsync();
+        [HttpPost("department")]
+        public Task<ResponseModel<decimal>> PostDepartment(admin_department ad) => _categoryService.PostDepartmentAsync(ad).ToResponseModelAsync();
+        [HttpPost("place")]
+        public Task<ResponseModel<decimal>> PostPlace(admin_place ap) => _categoryService.PostPlaceAsync(ap).ToResponseModelAsync();
     }
 }
